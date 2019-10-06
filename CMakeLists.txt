@@ -6,4 +6,4 @@ cmake_minimum_required (VERSION 3.8)
 project ("Concurrent Traffic Simulation")
 
 # Include sub-projects.
-add_subdirectory ("Concurrent Traffic Simulation")
+add_subdirectory ("src")
