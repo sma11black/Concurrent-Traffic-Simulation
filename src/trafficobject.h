@@ -28,13 +28,13 @@ public:
 	virtual void simulate() {};
 
 protected:
-	ObjectType _type;
-	int _id;
-	double _posX, _posY;
-	std::vector<std::thread> threads;
+	ObjectType _type;				// identifies the class type
+	int _id;						// every traffic object has its own unique id
+	double _posX, _posY;			// vehicle position in pixels
+	std::vector<std::thread> threads;	// holds all threads that have been launched within this object
 
 private:
-	static int _inCnt;
+	static int _idCnt;	// global variable for counting object ids
 };
 
 #endif // !TRAFFICOBJECT_H
