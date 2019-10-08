@@ -68,7 +68,7 @@ void Vehicle::drive()
 			dy = y2 - y1;
 			l = sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 			xv = x1 + completion * dx;	// new position based on line equation in parameter form
-			yv = x1 + completion * dy;
+			yv = y1 + completion * dy;
 			this->setPosition(xv, yv);
 
 			// check whether halting position in front of destination has been reached
