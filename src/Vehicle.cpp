@@ -31,8 +31,11 @@ void Vehicle::simulate()
 // virtual function which is executed in a thread
 void Vehicle::drive()
 {
+	// Task: Ensure that the text output locks the console as a shared resource.
+	std::unique_lock<std::mutex> lck(_mtx);
 	// print id of the current thread
 	std::cout << "Vehicle #" << _id << "::drive: thread id = " << std::this_thread::get_id() << std::endl;
+	lck.unlock();
 
 	// initalize variables
 	bool hasEnteredIntersection = false;

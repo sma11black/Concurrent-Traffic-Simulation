@@ -42,7 +42,11 @@ std::vector<std::shared_ptr<Street>> Intersection::queryStreets(std::shared_ptr<
 // adds a new vehicle to the queue and returns once the vehicle is allowed to enter
 void Intersection::addVehicleToQueue(std::shared_ptr<Vehicle> vehicle)
 {
+	// Task: Ensure that the text output locks the console as a shared resource.
+	std::unique_lock<std::mutex> lck(_mtx);
 	std::cout << "Intersection #" << _id << "::addVehicleToQueue: thread id = " << std::this_thread::get_id() << std::endl;
+	lck.unlock();
+	
 	// Task: add new vehicle to the end of the waiting line
 	std::promise<void> prmsVehicleAllowedToEnter;
 	std::future<void> ftrVehicleAllowedToEnter = prmsVehicleAllowedToEnter.get_future();
@@ -50,7 +54,9 @@ void Intersection::addVehicleToQueue(std::shared_ptr<Vehicle> vehicle)
 
 	// Task: wait until the vehicle is allowed to enter
 	ftrVehicleAllowedToEnter.wait();
+	lck.lock();
 	std::cout << "Intersection #" << _id << ": Vehicle #" << vehicle->getID() << " is granted entry." << std::endl;
+	lck.unlock();
 }
 
 // virtual function which is executed in a thread
@@ -65,6 +71,11 @@ void Intersection::vehicleHasLeft(std::shared_ptr<Vehicle> vehicle)
 {
 	//std::cout << "Intersection #" << _id << ": Vehicle #" << vehicle->getID() << " has left." << std::endl;
 	this->setIsBlocked(false);
+}
+
+bool Intersection::trafficLightIsGreen()
+{
+	return false;
 }
 
 void Intersection::processVehicleQueue()
@@ -85,19 +96,26 @@ void Intersection::processVehicleQueue()
 	}
 }
 
+// Task: Safeguard all accesses to the private members _vehicles and _promises with an appropriate locking mechanism
 int WaitingVehicles::getSize()
 {
+	std::lock_guard<std::mutex> lock(_mutex);
+
 	return _vehicles.size();
 }
 
 void WaitingVehicles::pushBack(std::shared_ptr<Vehicle> vehicle, std::promise<void>&& promise)
 {
+	std::lock_guard<std::mutex> lock(_mutex);
+
 	_vehicles.push_back(vehicle);
 	_promises.push_back(std::move(promise));
 }
 
 void WaitingVehicles::permitEntryToFirstInQueue()
 {
+	std::lock_guard<std::mutex> lock(_mutex);
+
 	// Task: get the entries from the front of _promises and _vehicles queues.
 	auto firstPromise = _promises.begin();
 	auto firstVehicle = _vehicles.begin();

@@ -6,6 +6,8 @@
 // init static variable
 int TrafficObject::_idCnt = 0;
 
+std::mutex TrafficObject::_mtx;
+
 TrafficObject::TrafficObject()
 {
 	_type = ObjectType::noObject;
